@@ -1,0 +1,77 @@
+extends layout
+
+block content  
+  div
+    div(class="form-group")
+      label(for="textinput") Name
+      input(id="textinput" type="text" class="form-control" aria-describedby="nameHelp")
+      small(id="nameHelp" class="form-text text-muted") 사용자 이름을 입력하세요.    
+    div(class="text-right")  
+      button(id="btnStart" type="button" class="btn btn-primary w-25") Start
+    hr
+    div
+      ul(id="listview" class="list-group")    
+
+block script 
+  script.
+    $(document).ready(function () {
+      var socket = io.connect();
+      
+      $('#btnStart').click(function () {        
+        var name = $('#textinput').val();
+
+        socket.emit('join', $('#textinput').val());
+
+        socket.on('update', function (data) {
+          var latitude = data.latitude;
+          var longitude = data.longitude;
+
+          var output = '';
+
+          output += '<h5>name : ' + data.name + '</h5>';
+          output += '<h5>latitude : ' + latitude + '</h5>';
+          output += '<h5>longitude : ' + longitude + '</h5>';
+          output += '<p>' + data.date + '</p>';
+
+          $('<li class="list-group-item"></li>').append(output).prependTo('#listview');
+
+          var content = $('#listview');
+
+          console.log(content.children().length);
+
+          if (content.children().length > 5) {
+            content.children().last().remove();
+          }  
+        });
+
+        navigator.geolocation.watchPosition(function (position) {
+          socket.emit('location', {
+            name: name,
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+          });
+        }, function (error) {
+          alert(error.message);
+        });
+
+        // function success(position) {           
+        //     socket.emit('location', {
+        //         name: name,
+        //         latitude: position.coords.latitude,
+        //         longitude: position.coords.longitude
+        //     });
+        // }
+
+        // function error() {
+        //     alert(`ERROR(${error.code}): ${error.message}`);
+        // }
+
+        // const options = {
+        //     enableHighAccuracy: true,
+        //     maximumAge: 30000,
+        //     timeout: 27000
+        // };
+
+        // const watchID = navigator.geolocation.watchPosition(success, error, options);
+      });
+    });
