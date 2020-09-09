@@ -65,19 +65,12 @@ io.sockets.on('connection', function (socket) {
 
     let today = new Date();
 
-    // io.sockets.in(data.name).emit('receive', {
-    //   name: data.name,
-    //   latitude: data.latitude,
-    //   longitude: data.longitude,
-    //   date: today.toLocaleString()
-    // }); 
-
-    io.sockets.emit('update', {
+    io.sockets.in(data.name).emit('receive', {
       name: data.name,
       latitude: data.latitude,
       longitude: data.longitude,
       date: today.toLocaleString()
-    });    
+    }); 
   });
 
   socket.on('clear', function (data) {

@@ -91,7 +91,9 @@ module.exports.insert = function (data) {
 
         var sql = "INSERT INTO locations (name, latitude, longitude, date) VALUES (?, ?, ?, ?)";
 
-        client.query(sql, [row.name, row.latitude, row.longitude, Date.now()], function (error, result) {
+        let today = new Date();
+
+        client.query(sql, [row.name, row.latitude, row.longitude, today.toLocaleString()], function (error, result) {
             if (error) {
                 return reject(error);
             } else {
