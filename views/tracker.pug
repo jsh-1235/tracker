@@ -16,8 +16,12 @@ block script
   script.
     $(document).ready(function () {
       var socket = io.connect();
+
+      $('#btnStart').prop('disabled', false);
       
-      $('#btnStart').click(function () {        
+      $('#btnStart').click(function () {   
+        $('#btnStart').prop('disabled', true);
+
         var name = $('#textinput').val();
 
         socket.emit('join', $('#textinput').val());
@@ -27,11 +31,10 @@ block script
           var longitude = data.longitude;
 
           var output = '';
-
-          output += '<h5>name : ' + data.name + '</h5>';
-          output += '<h5>latitude : ' + latitude + '</h5>';
-          output += '<h5>longitude : ' + longitude + '</h5>';
-          output += '<p>' + data.date + '</p>';
+          
+          output += '<h5>' + data.name + '</h5>';
+          output += '<h6>' + data.latitude + " / " + data.longitude + '</h6>';          
+          output += '<p>' + data.date + '</p>'          
 
           $('<li class="list-group-item"></li>').append(output).prependTo('#listview');
 
@@ -42,36 +45,17 @@ block script
           if (content.children().length > 5) {
             content.children().last().remove();
           }  
-        });
+        });        
 
         navigator.geolocation.watchPosition(function (position) {
           socket.emit('location', {
             name: name,
             latitude: position.coords.latitude,
-            longitude: position.coords.longitude
+            longitude: position.coords.longitude,
+            date : new Date().toLocaleString()
           });
         }, function (error) {
           alert(error.message);
         });
-
-        // function success(position) {           
-        //     socket.emit('location', {
-        //         name: name,
-        //         latitude: position.coords.latitude,
-        //         longitude: position.coords.longitude
-        //     });
-        // }
-
-        // function error() {
-        //     alert(`ERROR(${error.code}): ${error.message}`);
-        // }
-
-        // const options = {
-        //     enableHighAccuracy: true,
-        //     maximumAge: 30000,
-        //     timeout: 27000
-        // };
-
-        // const watchID = navigator.geolocation.watchPosition(success, error, options);
       });
     });

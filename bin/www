@@ -62,14 +62,12 @@ io.sockets.on('connection', function (socket) {
     }).catch((error) => setImmediate(() => {
       console.log(error);
     }));
-
-    let today = new Date();
-
+    
     io.sockets.in(data.name).emit('receive', {
       name: data.name,
       latitude: data.latitude,
       longitude: data.longitude,
-      date: today.toLocaleString()
+      date: new Date().toLocaleString()
     }); 
   });
 

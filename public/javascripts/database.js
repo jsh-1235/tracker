@@ -1,27 +1,27 @@
 'use strict';
 var mysql = require('mysql');
 
-// function connect() {
-//     return mysql.createConnection({
-//         host: 'localhost',
-//         user: 'root',
-//         password: 'jshhaby0921++',
-//         database: 'Location',
-//         port: 3306,
-//         ssl: false
-//     });
-// }
-
 function connect() {
     return mysql.createConnection({
-        host: 'us-cdbr-east-02.cleardb.com',
-        user: 'b7f38136889ea3',
-        password: '9bc0ca2f',
-        database: 'heroku_c7d8ff5943024e2',
+        host: 'localhost',
+        user: 'root',
+        password: 'jshhaby0921++',
+        database: 'Location',
         port: 3306,
         ssl: false
     });
 }
+
+// function connect() {
+//     return mysql.createConnection({
+//         host: 'us-cdbr-east-02.cleardb.com',
+//         user: 'b7f38136889ea3',
+//         password: '9bc0ca2f',
+//         database: 'heroku_c7d8ff5943024e2',
+//         port: 3306,
+//         ssl: false
+//     });
+// }
 
 module.exports.selectAll = function () {
     return new Promise(function (resolve, reject) {
