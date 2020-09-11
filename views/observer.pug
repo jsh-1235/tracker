@@ -13,26 +13,26 @@ block style
     }
 
     button{
-      min-width : 100px;
+      min-width : 20%;
     }
 
 block content
   div
     button(id="btnLoad" type="button" class="btn btn-outline-primary mr-1")
       div
-        span(id="spinner1" class="spinner-border spinner-border-sm text-primary mr-1" role="status" aria-hidden="true")
+        span(id="spinner1" class="spinner-border text-light spinner-border-sm text-primary mr-1" role="status" aria-hidden="true")
         span Load
     button(id="btnSearch" type="button" class="btn btn-outline-primary mr-1")
       div
-        span(id="spinner2" class="spinner-border spinner-border-sm text-primary mr-1" role="status" aria-hidden="true")
+        span(id="spinner2" class="spinner-border text-light spinner-border-sm text-primary mr-1" role="status" aria-hidden="true")
         span Search
     button(id="btnAdd" type="button" class="btn btn-outline-primary mr-1")
       div
-        span(id="spinner3" class="spinner-border spinner-border-sm text-primary mr-1" role="status" aria-hidden="true")
+        span(id="spinner3" class="spinner-border text-light spinner-border-sm text-primary mr-1" role="status" aria-hidden="true")
         span ADD
     button(id="btnClear" type="button" class="btn btn-outline-primary mr-1")
       div
-        span(id="spinner4" class="spinner-border spinner-border-sm text-primary mr-1" role="status" aria-hidden="true")
+        span(id="spinner4" class="spinner-border text-light spinner-border-sm text-primary mr-1" role="status" aria-hidden="true")
         span Clear
     hr
     div(id="map" style="width:100%; height: 40vh;")
@@ -138,11 +138,15 @@ block script
           addMarker(location);
         }
 
-        //- $("#list-map").scrollTop($("#list-map")[0].scrollHeight);
+        var parent = $("#list-content");
 
-        var mydiv = $("#list-content");
-        mydiv.scrollTop(mydiv.prop("scrollHeight"));
+        parent.scrollTop(parent.prop("scrollHeight"));      
       });        
+
+      $('#spinner1').hide();  
+      $('#spinner2').hide();  
+      $('#spinner3').hide();  
+      $('#spinner4').hide();  
     }
 
     function showMap(id){      
@@ -164,31 +168,27 @@ block script
       $('#spinner4').hide();
 
       $("#btnLoad").click(function(){        
-        $('#spinner1').show('slow');       
+        $('#spinner1').show();       
 
         var name = null;
 
         socket.emit('join', name);        
 
-        addMap(name);     
-
-        $('#spinner1').hide('slow');        
+        addMap(name);           
       }); 
 
       $("#btnSearch").click(function(){         
         var name = prompt('이름을 입력하세요.', '이름');
 
-        $('#spinner2').show('slow');       
-        
+        $('#spinner2').show();       
+
         socket.emit('join', name);          
 
-        addMap(name); 
-
-        $('#spinner2').hide('slow');        
+        addMap(name);               
       }); 
 
       $("#btnAdd").click(function(){  
-        $('#spinner3').show('slow');    
+        $('#spinner3').show();    
 
         navigator.geolocation.getCurrentPosition((position) => {          
           socket.emit('location', {
@@ -200,7 +200,7 @@ block script
       }); 
 
       $("#btnClear").click(function(){ 
-        $('#spinner4').show('slow');    
+        $('#spinner4').show();    
 
         clearMarkers();
 
@@ -222,11 +222,7 @@ block script
           console.log("Data is null.");
         }
 
-        addMap(null);
-
-        $('#spinner3').hide('slow');  
-
-        $('#spinner4').hide('slow');      
+        addMap(null);    
       });    
     });
 
