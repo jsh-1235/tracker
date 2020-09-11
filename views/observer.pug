@@ -3,8 +3,10 @@ extends layout
 block style
   style. 
     .list-group{
-      max-height: 70vh;
-      margin-bottom: 0px;
+      max-height: 30vh;
+      margin-top: 10px;
+      padding: 0px;
+      border: 1px solid rgna(0, 0, 0, 0);
       overflow:scroll;
       overflow-x: hidden;
       -webkit-overflow-scrolling: touch;
@@ -18,18 +20,25 @@ block content
   div
     button(id="btnLoad" type="button" class="btn btn-outline-primary mr-1")
       div
-        span(id="spinner" class="spinner-border spinner-border-sm text-primary mr-1" role="status" aria-hidden="true")
+        span(id="spinner1" class="spinner-border spinner-border-sm text-primary mr-1" role="status" aria-hidden="true")
         span Load
-    button(id="btnSearch" type="button" class="btn btn-outline-primary mr-1") Search
-    button(id="btnAdd" type="button" class="btn btn-outline-primary mr-1") +
-    button(id="btnClear" type="button" class="btn btn-outline-primary mr-1") Clear
+    button(id="btnSearch" type="button" class="btn btn-outline-primary mr-1")
+      div
+        span(id="spinner2" class="spinner-border spinner-border-sm text-primary mr-1" role="status" aria-hidden="true")
+        span Search
+    button(id="btnAdd" type="button" class="btn btn-outline-primary mr-1")
+      div
+        span(id="spinner3" class="spinner-border spinner-border-sm text-primary mr-1" role="status" aria-hidden="true")
+        span ADD
+    button(id="btnClear" type="button" class="btn btn-outline-primary mr-1")
+      div
+        span(id="spinner4" class="spinner-border spinner-border-sm text-primary mr-1" role="status" aria-hidden="true")
+        span Clear
     hr
-
-  div(class="row" style="width:100%; height: 70vh;")   
-    div(class="col-sm")
+    div(id="map" style="width:100%; height: 40vh;")
+    hr
+    div
       ul(id="list-content" class="list-group")
-
-    div(id="map" class="col-sm")
 
 block script
   //- script(src="http://code.jquery.com/jquery-3.5.1.min.js")
@@ -92,7 +101,7 @@ block script
     }
 
     function moveMap(location) {
-      map.panTo(location); map.setZoom(12);
+      map.panTo(location); map.setZoom(16);
     }
 
     function addMap(name){
@@ -128,6 +137,11 @@ block script
 
           addMarker(location);
         }
+
+        //- $("#list-map").scrollTop($("#list-map")[0].scrollHeight);
+
+        var mydiv = $("#list-content");
+        mydiv.scrollTop(mydiv.prop("scrollHeight"));
       });        
     }
 
@@ -143,26 +157,39 @@ block script
       }
     }
 
-    $(document).ready(function () {     
+    $(document).ready(function () {  
+      $('#spinner1').hide();
+      $('#spinner2').hide();
+      $('#spinner3').hide();
+      $('#spinner4').hide();
+
       $("#btnLoad").click(function(){        
+        $('#spinner1').show('slow');       
+
         var name = null;
 
         socket.emit('join', name);        
-      
-        addMap(name);
 
-        $('#spinner').hide('slow');
+        addMap(name);     
+
+        $('#spinner1').hide('slow');        
       }); 
 
-      $("#btnSearch").click(function(){  
+      $("#btnSearch").click(function(){         
         var name = prompt('이름을 입력하세요.', '이름');
 
-        socket.emit('join', name);  
+        $('#spinner2').show('slow');       
+        
+        socket.emit('join', name);          
 
         addMap(name); 
+
+        $('#spinner2').hide('slow');        
       }); 
 
       $("#btnAdd").click(function(){  
+        $('#spinner3').show('slow');    
+
         navigator.geolocation.getCurrentPosition((position) => {          
           socket.emit('location', {
             name: list.length.toString(),
@@ -173,6 +200,8 @@ block script
       }); 
 
       $("#btnClear").click(function(){ 
+        $('#spinner4').show('slow');    
+
         clearMarkers();
 
         socket.emit('clear', {
@@ -183,7 +212,7 @@ block script
       socket.on('update', function (data) {
         if(data.length != 0){          
           console.log("receive : " + data.name + " [" + data.latitude + " : " + data.longitude + "]");
-          
+
           var location = { lat: data.latitude, lng: data.longitude };
 
           //addMarker(location);
@@ -194,6 +223,10 @@ block script
         }
 
         addMap(null);
+
+        $('#spinner3').hide('slow');  
+
+        $('#spinner4').hide('slow');      
       });    
     });
 

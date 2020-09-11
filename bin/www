@@ -55,7 +55,7 @@ io.sockets.on('connection', function (socket) {
       database.select().then(function (records) {
         console.log("insert : " + data);
 
-        //io.sockets.emit('update', records);
+        io.sockets.emit('update', data);
       }).catch((error) => setImmediate(() => {
         console.log(error);;
       }));
