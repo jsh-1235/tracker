@@ -197,7 +197,7 @@ block script
           var output = '<div>';
           output += '<h5>' + list[i].name + '</h5>';
           output += '<h6>' + list[i].latitude + " / " + list[i].longitude + '</h6>';
-          output += '<p>' + list[i].date + '</p>'
+          output += '<p>' + list[i].date + ' ['+ (i + 1) + ']</p>'
           output += '</div>'
 
           $("#list-content").append('<li class="list-group-item d-flex justify-content-between align-items-center">' + output + '<button type="button" class="btn btn-outline-primary" onclick="showMap(' + id + ')">' + "SHOW" + '</button>' + '</li>');

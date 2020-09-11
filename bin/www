@@ -62,13 +62,13 @@ io.sockets.on('connection', function (socket) {
     }).catch((error) => setImmediate(() => {
       console.log(error);
     }));
-    
+
     io.sockets.in(data.name).emit('receive', {
       name: data.name,
       latitude: data.latitude,
       longitude: data.longitude,
       date: new Date().toLocaleString()
-    }); 
+    });
   });
 
   socket.on('clear', function (data) {

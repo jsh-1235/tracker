@@ -1,5 +1,17 @@
 extends layout
 
+block style
+  style. 
+    .list-group{
+      max-height: 70vh;
+      margin-top: 10px;
+      padding: 0px;
+      border: 1px solid rgna(0, 0, 0, 0);
+      overflow:scroll;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+    }
+
 block content  
   div
     div(class="form-group")
@@ -18,8 +30,8 @@ block script
       var socket = io.connect();
 
       $('#btnStart').prop('disabled', false);
-      
-      $('#btnStart').click(function () {   
+
+      $('#btnStart').click(function () {
         $('#btnStart').prop('disabled', true);
 
         var name = $('#textinput').val();
@@ -30,29 +42,35 @@ block script
           var latitude = data.latitude;
           var longitude = data.longitude;
 
+          var parent = $("#listview");
+
+          var count = parent.children().length + 1;
+
+          console.log(count);
+
           var output = '';
-          
+
           output += '<h5>' + data.name + '</h5>';
-          output += '<h6>' + data.latitude + " / " + data.longitude + '</h6>';          
-          output += '<p>' + data.date + '</p>'          
+          output += '<h6>' + data.latitude + " / " + data.longitude + '</h6>';
+          output += '<p>' + data.date + ' [' + count + ']</p>'
 
           $('<li class="list-group-item"></li>').append(output).prependTo('#listview');
 
-          var content = $('#listview');
+          //- var parent = $("#listview");
 
-          console.log(content.children().length);
+          //- parent.scrollTop(parent.prop("scrollHeight"));
 
-          if (content.children().length > 5) {
-            content.children().last().remove();
-          }  
-        });        
+          //- if (parent.children().length > 5) {
+          //-   parent.children().last().remove();
+          //- }
+        });
 
         navigator.geolocation.watchPosition(function (position) {
           socket.emit('location', {
             name: name,
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
-            date : new Date().toLocaleString()
+            date: new Date().toLocaleString()
           });
         }, function (error) {
           alert(error.message);
