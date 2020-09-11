@@ -93,7 +93,7 @@ module.exports.insert = function (data) {
 
         let today = new Date();
 
-        client.query(sql, [row.name, row.latitude, row.longitude, today.toLocaleString()], function (error, result) {
+        client.query(sql, [row.name, row.latitude, row.longitude, data.date], function (error, result) {
             if (error) {
                 return reject(error);
             } else {

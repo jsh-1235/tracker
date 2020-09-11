@@ -21,19 +21,28 @@ block content
     button(id="btnLoad" type="button" class="btn btn-outline-primary mr-1")
       div
         span(id="spinner1" class="spinner-border text-light spinner-border-sm text-primary mr-1" role="status" aria-hidden="true")
-        span Load
+        i(class='fas fa-retweet')
     button(id="btnSearch" type="button" class="btn btn-outline-primary mr-1")
       div
         span(id="spinner2" class="spinner-border text-light spinner-border-sm text-primary mr-1" role="status" aria-hidden="true")
-        span Search
+        i(class='fas fa-search-plus')
     button(id="btnAdd" type="button" class="btn btn-outline-primary mr-1")
       div
         span(id="spinner3" class="spinner-border text-light spinner-border-sm text-primary mr-1" role="status" aria-hidden="true")
-        span ADD
+        i(class='far fa-plus-square')
     button(id="btnClear" type="button" class="btn btn-outline-primary mr-1")
       div
         span(id="spinner4" class="spinner-border text-light spinner-border-sm text-primary mr-1" role="status" aria-hidden="true")
-        span Clear
+        i(class='far fa-trash-alt')
+  hr        
+  div      
+    button(id="btnMarker" type="button" class="btn btn-primary mr-1")
+      div        
+        i(class="fas fa-map-marker-alt")
+    button(id="btnLine" type="button" class="btn btn-primary mr-1")
+      div        
+        i(class="fas fa-draw-polygon")
+
     hr
     div(id="map" style="width:100%; height: 30vh;")
     hr
@@ -47,7 +56,10 @@ block script
 
   script.
     let map;
+
     let markers = [];
+
+    let flightPath;
 
     var list = [];
 
@@ -59,21 +71,80 @@ block script
       //- map = new google.maps.Map(document.getElementById('map'), { zoom: 12, center: seoul, mapTypeId: "terrain" });
       map = new google.maps.Map(document.getElementById('map'), { zoom: 12, center: seoul });
 
-      //- This event listener will call addMarker() when the map is clicked.
-      map.addListener("click", event => {
-        //addMarker(event.latLng);
+      map.addListener("center_changed", () => {
+        //- 3 seconds after the center of the map has changed, pan back to the marker.
+        if (markers.length != 0) {
+          window.setTimeout(() => {
+            map.panTo(markers[markers.length - 1].getPosition());
+          }, 3000);
+        }
       });
 
-      //- Adds a marker at the center of the map.
-      //addMarker(seoul);
+      //- This event listener will call addMarker() when the map is clicked.
+      map.addListener("click", event => {
+      });
+    }
+
+    function addLine(list) {
+      var coordinates = [];
+
+      if (flightPath != null) {
+        removeLine();
+      }
+
+      for (var i = 0; i < list.length; i++) {
+        coordinates.push({ lat: list[i].latitude, lng: list[i].longitude });
+      }
+
+      flightPath = new google.maps.Polyline({
+        path: coordinates,
+        geodesic: true,
+        strokeColor: "#FF0000",
+        strokeOpacity: 1.0,
+        strokeWeight: 2
+      });
+
+      flightPath.setMap(map);
+    }
+
+    function removeLine() {
+      if (flightPath != null) {
+        flightPath.setMap(null);
+      }
     }
 
     //- Adds a marker to the map and push to the array.
-    function addMarker(location) {
+    function addMarker(location, name, date) {
+      //- const image = "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png";
+
+      //- const marker = new google.maps.Marker({
+      //-   position: location,
+      //-   map: map,
+      //-   icon: image,
+      //-   title: "Uluru (Ayers Rock)",
+      //-   label: label        
+      //- });
+
+      var position = location.lat + " / " + location.lng;
+
+      const contentString = "<div>" + "<h4>" + name + "</h4>" + "<p>" + position + "</p>" + "<p style='color:rgb(0,105, 217);'>" + date + "</p>" + "</div>"
+
+      const infowindow = new google.maps.InfoWindow({
+        content: contentString
+      });
+
       const marker = new google.maps.Marker({
         position: location,
-        map: map
+        map: map,
+        label: name
       });
+
+      marker.addListener("click", () => {
+        map.setZoom(20);
+        map.setCenter(marker.getPosition());
+        infowindow.open(map, marker);
+      });
+
       markers.push(marker);
     }
 
@@ -104,16 +175,16 @@ block script
       map.panTo(location); map.setZoom(16);
     }
 
-    function addMap(name){
+    function addMap(name) {
       clearMarkers();
 
       list = [];
 
       $.getJSON('/show', { name: name }, function (data) {
         $.each(data, function (index, item) {
-          //console.log("(" + index + ") " + item.name + " [" + item.latitude + " : " + item.longitude + "]");
+          //- console.log("(" + index + ") " + item.name + " [" + item.latitude + " : " + item.longitude + "]");
 
-          list.push(data[index]);            
+          list.push(data[index]);
         });
 
         $('#list-content').empty();
@@ -125,105 +196,118 @@ block script
 
           var output = '<div>';
           output += '<h5>' + list[i].name + '</h5>';
-          output += '<h6>' + list[i].latitude + " / " + list[i].longitude + '</h6>';          
+          output += '<h6>' + list[i].latitude + " / " + list[i].longitude + '</h6>';
           output += '<p>' + list[i].date + '</p>'
           output += '</div>'
 
-          $("#list-content").append('<li class="list-group-item d-flex justify-content-between align-items-center">' + output + '<button type="button" class="btn btn-outline-primary" onclick="showMap(' + id  + ')">' + "SHOW" + '</button>' + '</li>');                
+          $("#list-content").append('<li class="list-group-item d-flex justify-content-between align-items-center">' + output + '<button type="button" class="btn btn-outline-primary" onclick="showMap(' + id + ')">' + "SHOW" + '</button>' + '</li>');
 
           //- $("#list-content").append('<li class="list-group-item d-flex justify-content-between align-items-center">' + list[i].name + '<button type="button" class="btn btn-outline-primary" onclick="showMap(' + id  + ')">' + "SHOW" + '</button>' + '</li>');                
 
           var location = { lat: list[i].latitude, lng: list[i].longitude };
 
-          addMarker(location);
+          addMarker(location, list[i].name, list[i].date);
         }
+
+        addLine(list);
 
         var parent = $("#list-content");
 
-        parent.scrollTop(parent.prop("scrollHeight"));      
-      });        
+        parent.scrollTop(parent.prop("scrollHeight"));
+      });
 
-      $('#spinner1').hide("slow");  
-      $('#spinner2').hide("slow");  
-      $('#spinner3').hide("slow");  
-      $('#spinner4').hide("slow");  
+      $('#spinner1').hide("slow");
+      $('#spinner2').hide("slow");
+      $('#spinner3').hide("slow");
+      $('#spinner4').hide("slow");
     }
 
-    function showMap(id){      
-      for(var i = 0; i < list.length; i++){
-        if(list[i].id == id){
+    function showMap(id) {
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].id == id) {
           var location = { lat: list[i].latitude, lng: list[i].longitude };
 
           moveMap(location);
+
+          addMarker(location, list[i].name, list[i].date);
 
           break;
         }
       }
     }
 
-    $(document).ready(function () {  
+    $(document).ready(function () {
       $('#spinner1').hide("slow");
       $('#spinner2').hide("slow");
       $('#spinner3').hide("slow");
       $('#spinner4').hide("slow");
 
-      $("#btnLoad").click(function(){        
-        $('#spinner1').show("slow");       
+      $("#btnLoad").click(function () {
+        $('#spinner1').show("slow");
 
         var name = null;
 
-        socket.emit('join', name);        
+        socket.emit('join', name);
 
-        addMap(name);           
-      }); 
+        addMap(name);
+      });
 
-      $("#btnSearch").click(function(){         
+      $("#btnSearch").click(function () {
         var name = prompt('이름을 입력하세요.', '이름');
 
-        $('#spinner2').show("slow");       
+        $('#spinner2').show("slow");
 
-        socket.emit('join', name);          
+        socket.emit('join', name);
 
-        addMap(name);               
-      }); 
+        addMap(name);
+      });
 
-      $("#btnAdd").click(function(){  
-        $('#spinner3').show("slow");    
+      $("#btnAdd").click(function () {
+        $('#spinner3').show("slow");
 
-        navigator.geolocation.getCurrentPosition((position) => {          
+        navigator.geolocation.getCurrentPosition((position) => {
           socket.emit('location', {
             name: list.length.toString(),
             latitude: position.coords.latitude,
-            longitude: position.coords.longitude
-          });          
-        });       
-      }); 
+            longitude: position.coords.longitude,
+            date: new Date().toLocaleString()
+          });
+        });
+      });
 
-      $("#btnClear").click(function(){ 
-        $('#spinner4').show("slow");    
+      $("#btnClear").click(function () {
+        $('#spinner4').show("slow");
 
         clearMarkers();
 
+        removeLine();
+
         socket.emit('clear', {
-          option: "all"            
+          option: "all"
         });
-      });   
+      });
+
+      $("#btnMarker").click(function () {
+        clearMarkers();
+      });
+
+      $("#btnLine").click(function () {
+        removeLine();
+      });
 
       socket.on('update', function (data) {
-        if(data.length != 0){          
+        if (data.length != 0) {
           console.log("receive : " + data.name + " [" + data.latitude + " : " + data.longitude + "]");
 
           var location = { lat: data.latitude, lng: data.longitude };
 
-          //addMarker(location);
-
           moveMap(location);
-        }else{
+        } else {
           console.log("Data is null.");
         }
 
-        addMap(null);    
-      });    
+        addMap(null);
+      });
     });
 
 
