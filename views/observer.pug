@@ -143,10 +143,10 @@ block script
         parent.scrollTop(parent.prop("scrollHeight"));      
       });        
 
-      $('#spinner1').hide();  
-      $('#spinner2').hide();  
-      $('#spinner3').hide();  
-      $('#spinner4').hide();  
+      $('#spinner1').hide("slow");  
+      $('#spinner2').hide("slow");  
+      $('#spinner3').hide("slow");  
+      $('#spinner4').hide("slow");  
     }
 
     function showMap(id){      
@@ -162,13 +162,13 @@ block script
     }
 
     $(document).ready(function () {  
-      $('#spinner1').hide();
-      $('#spinner2').hide();
-      $('#spinner3').hide();
-      $('#spinner4').hide();
+      $('#spinner1').hide("slow");
+      $('#spinner2').hide("slow");
+      $('#spinner3').hide("slow");
+      $('#spinner4').hide("slow");
 
       $("#btnLoad").click(function(){        
-        $('#spinner1').show();       
+        $('#spinner1').show("slow");       
 
         var name = null;
 
@@ -180,7 +180,7 @@ block script
       $("#btnSearch").click(function(){         
         var name = prompt('이름을 입력하세요.', '이름');
 
-        $('#spinner2').show();       
+        $('#spinner2').show("slow");       
 
         socket.emit('join', name);          
 
@@ -188,7 +188,7 @@ block script
       }); 
 
       $("#btnAdd").click(function(){  
-        $('#spinner3').show();    
+        $('#spinner3').show("slow");    
 
         navigator.geolocation.getCurrentPosition((position) => {          
           socket.emit('location', {
@@ -200,7 +200,7 @@ block script
       }); 
 
       $("#btnClear").click(function(){ 
-        $('#spinner4').show();    
+        $('#spinner4').show("slow");    
 
         clearMarkers();
 
